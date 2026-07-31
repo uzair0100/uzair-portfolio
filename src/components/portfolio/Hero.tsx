@@ -52,7 +52,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative flex min-h-screen items-center overflow-hidden px-6 py-20 sm:py-28 md:px-16"
+      className="relative flex min-h-screen items-center overflow-hidden px-6 py-12 sm:py-16 md:px-16"
     >
       <div
         aria-hidden
@@ -68,10 +68,10 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...entranceTransition(0.15), duration: DURATION.page }}
         >
-          <p className="mb-6 text-xs uppercase tracking-[0.4em] text-white/50">
+          <p className="mb-4 text-xs uppercase tracking-[0.4em] text-white/50">
             Available for work · 2026
           </p>
-          <h1 className="font-display text-5xl font-bold leading-[1.05] text-white sm:text-6xl md:text-7xl lg:text-8xl">
+          <h1 className="font-display text-5xl font-bold leading-[1.05] text-white sm:text-6xl md:text-7xl lg:text-7xl">
             Software
             <br />
             Engineer
@@ -81,12 +81,12 @@ export default function Hero() {
               Fullstack & AI Automation Specialist
             </span>
           </div>
-          <p className="mt-8 max-w-lg text-base leading-[1.6] text-white/65 md:text-lg">
+          <p className="mt-5 max-w-lg text-base leading-[1.6] text-white/65 md:text-lg">
             I build AI-driven products and full-stack platforms that go from
             idea to production — from AI recruitment engines to generative
             content tools used by real companies today.
           </p>
-          <div className="mt-8 flex flex-wrap gap-4">
+          <div className="mt-6 flex flex-wrap gap-4">
             <a
               href="#projects"
               className="rounded-full bg-violet px-6 py-3 text-sm font-semibold text-white transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] hover:scale-105 motion-reduce:hover:scale-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet"
@@ -106,7 +106,7 @@ export default function Hero() {
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ ...entranceTransition(0.35), duration: DURATION.page + 0.15 }}
-          className="relative mx-auto w-full max-w-xs sm:max-w-sm md:max-w-md"
+          className="relative mx-auto w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px]"
         >
           <div
             aria-hidden

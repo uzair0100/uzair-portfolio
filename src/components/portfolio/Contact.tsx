@@ -92,7 +92,7 @@ export default function Contact() {
       <div className="mx-auto max-w-3xl">
         <div className="mb-12 text-center">
           <p className="text-xs uppercase tracking-[0.4em] text-white/40">Let's Build</p>
-          <h2 className="mt-3 font-display text-4xl font-bold text-white md:text-6xl">
+          <h2 className="mt-3 font-display text-5xl font-bold text-white md:text-7xl">
             Hire Me
           </h2>
           <p className="mx-auto mt-4 max-w-lg leading-[1.6] text-white/60">

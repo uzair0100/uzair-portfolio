@@ -38,7 +38,7 @@ const projects: Project[] = [
     accent: "violet",
   },
   {
-    title: "BaseHR",
+    title: "BaseHR (AI Recruitment Platform)",
     desc: "AI hiring platform that scores every applicant against the actual job, not just keywords.",
     tech: ["React", "Express.js", "LangChain", "LangGraph", "Gemini", "Supabase", "Flask"],
     image: assets.basehr,
@@ -62,12 +62,12 @@ const projects: Project[] = [
     accent: "cyan",
   },
   {
-    title: "Federated AI Recruitment",
+    title: "Federated AI Recruitment System",
     desc: "Next-generation recruitment intelligence system currently in active development.",
     tech: ["AI Automation", "In Development"],
     image: assets.federated,
     accent: "violet",
-    status: "In Progress",
+    status: "Coming Soon",
   },
 ];
 
@@ -81,6 +81,16 @@ function ProjectCard({
   innerRef?: (el: HTMLDivElement | null) => void;
 }) {
   const glow = p.accent === "violet" ? "glow-violet" : "glow-cyan";
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Stop event from propagating to carousel rail
+    e.stopPropagation();
+    
+    if (p.link) {
+      window.open(p.link, "_blank", "noopener,noreferrer");
+    }
+  };
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
@@ -90,7 +100,9 @@ function ProjectCard({
         ...entranceTransition(Math.min(index * STAGGER.default, 0.4)),
       }}
       whileHover={{ y: -6, transition: hoverTransition }}
-      className={`glass-panel group overflow-hidden rounded-2xl ${glow}`}
+      onClick={handleCardClick}
+      style={{ pointerEvents: 'auto' }}
+      className={`glass-panel group overflow-hidden rounded-2xl ${glow} ${p.link ? 'cursor-pointer' : ''}`}
     >
       <div
         ref={innerRef}
@@ -109,6 +121,17 @@ function ProjectCard({
             height={675}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#1b1722] via-transparent to-transparent" />
+          
+          {/* Smooth hover hint overlay - only for clickable cards */}
+          {p.link && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:bg-black/30 pointer-events-none">
+              <div className="flex translate-y-8 flex-col items-center gap-2 opacity-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:translate-y-0 group-hover:opacity-100">
+                <ArrowUpRight className="h-6 w-6 text-white" />
+                <span className="text-sm font-semibold text-white">View Live Demo</span>
+              </div>
+            </div>
+          )}
+          
           {p.status && (
             <span className="absolute right-3 top-3 rounded-full border border-violet/40 bg-violet/20 px-2.5 py-0.5 text-[10px] font-medium text-white backdrop-blur">
               {p.status}
@@ -128,22 +151,13 @@ function ProjectCard({
               </span>
             ))}
           </div>
-          <div className="mt-4">
-            {p.link ? (
-              <a
-                href={p.link}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] hover:gap-3 hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet"
-              >
-                Live demo <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:rotate-45" />
-              </a>
-            ) : (
+          {p.status && !p.link && (
+            <div className="mt-4">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1.5 text-xs text-white/60">
-                Coming Soon
+                {p.status}
               </span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </motion.article>
@@ -255,6 +269,11 @@ export default function Projects() {
   }, [scheduleTransformUpdate]);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // CRITICAL FIX: Don't capture pointer if clicking on a project card
+    if ((e.target as Element).closest('[data-project-card]')) {
+      return;
+    }
+    
     const el = railRef.current;
     if (!el) return;
     cancelAnimationFrame(momentumRafRef.current);
@@ -278,7 +297,8 @@ export default function Projects() {
     if (!s.down || !el) return;
     const now = performance.now();
     const dx = e.clientX - s.startX;
-    if (Math.abs(dx) > 4) s.moved = true;
+    // Only mark as moved if there's significant movement (>8px threshold)
+    if (Math.abs(dx) > 8) s.moved = true;
     el.scrollLeft = s.startScroll - dx;
 
     const dt = now - s.lastTime;
@@ -293,14 +313,17 @@ export default function Projects() {
   const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = railRef.current;
     if (!el) return;
-    dragState.current.down = false;
-    el.style.cursor = "grab";
-    el.style.scrollBehavior = reducedMotion ? "auto" : "smooth";
+    // Release pointer capture FIRST to avoid click interception
     try {
       el.releasePointerCapture(e.pointerId);
     } catch {
       /* pointer already released */
     }
+    dragState.current.down = false;
+    // Reset moved flag after drag ends
+    dragState.current.moved = false;
+    el.style.cursor = "grab";
+    el.style.scrollBehavior = reducedMotion ? "auto" : "smooth";
     if (!reducedMotion && Math.abs(velocityRef.current) > 0.5) {
       applyMomentum();
     }
@@ -310,7 +333,7 @@ export default function Projects() {
     <section id="projects" className="relative py-24">
       <div className="mx-auto max-w-6xl px-6 text-center">
         <p className="text-xs uppercase tracking-[0.4em] text-white/40">Featured Work</p>
-        <h2 className="mt-3 font-display text-4xl font-bold text-white md:text-6xl">
+        <h2 className="mt-3 font-display text-5xl font-bold text-white md:text-7xl">
           Products in the wild
         </h2>
         <p className="mx-auto mt-4 max-w-xl leading-[1.6] text-white/60">
@@ -329,7 +352,9 @@ export default function Projects() {
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
         onClickCapture={(e) => {
-          if (dragState.current.moved) {
+          // Only prevent clicks if there was actual dragging movement
+          // Allow clicks on the carousel itself for project cards
+          if (dragState.current.moved && !(e.target as Element).closest('[data-project-card]')) {
             e.preventDefault();
             e.stopPropagation();
           }
@@ -357,6 +382,7 @@ export default function Projects() {
           scrollbarWidth: "none",
           WebkitOverflowScrolling: "touch",
           touchAction: "pan-x",
+          overscrollBehaviorX: "contain",
           paddingLeft: "max(1.5rem, calc((100vw - 28rem) / 2))",
           paddingRight: "max(1.5rem, calc((100vw - 28rem) / 2))",
         }}

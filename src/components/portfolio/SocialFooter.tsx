@@ -8,7 +8,7 @@ type Item = {
 
 const items: Item[] = [
   { href: "https://www.facebook.com/wtsupjerry/", label: "Facebook", Icon: FaFacebookF },
-  { href: "https://www.linkedin.com/", label: "LinkedIn", Icon: FaLinkedinIn },
+  { href: "https://www.linkedin.com/in/uzair-younis-347438364/", label: "LinkedIn", Icon: FaLinkedinIn },
   { href: "https://www.instagram.com/wtsupjerry/", label: "Instagram", Icon: FaInstagram },
 ];
 

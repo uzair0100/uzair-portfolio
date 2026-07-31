@@ -149,7 +149,7 @@ export default function FunFacts() {
       <div className="mx-auto max-w-6xl">
         <div className="mb-16 text-center">
           <p className="text-xs uppercase tracking-[0.4em] text-white/40">Off the Clock</p>
-          <h2 className="mt-3 font-display text-4xl font-bold text-white md:text-6xl">
+          <h2 className="mt-3 font-display text-5xl font-bold text-white md:text-7xl">
             Beyond the Code
           </h2>
         </div>

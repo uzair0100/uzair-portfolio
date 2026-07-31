@@ -98,9 +98,11 @@ export default function CardNav() {
         >
           <span
             className={`h-0.5 w-5 bg-white transition-transform ${isOpen ? "translate-y-[3px] rotate-45" : ""}`}
+            style={{ backgroundColor: '#ffffff' }}
           />
           <span
             className={`h-0.5 w-5 bg-white transition-transform ${isOpen ? "-translate-y-[5px] -rotate-45" : ""}`}
+            style={{ backgroundColor: '#ffffff' }}
           />
         </button>
         <span className="font-display text-sm font-bold uppercase tracking-[0.25em] text-white">

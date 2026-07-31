@@ -102,7 +102,7 @@ export default function TechMarquee() {
     <section id="tech" className="relative overflow-x-clip py-24" aria-label="Technology stack">
       <div className="mx-auto mb-12 max-w-6xl px-6 text-center">
         <p className="text-xs uppercase tracking-[0.4em] text-white/40">The Stack</p>
-        <h2 className="mt-3 font-display text-4xl font-bold text-white md:text-5xl">
+        <h2 className="mt-3 font-display text-5xl font-bold text-white md:text-6xl">
           Tools I ship with
         </h2>
       </div>

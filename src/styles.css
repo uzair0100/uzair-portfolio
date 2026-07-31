@@ -153,10 +153,22 @@
     font-family: var(--font-sans);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    /* Fix Safari elastic scroll glitches */
+    overscroll-behavior-y: none;
   }
 
   html {
     background-color: #0f0f12;
+    /* Fix iOS Safari viewport height issues */
+    height: -webkit-fill-available;
+    /* Prevent horizontal overscroll */
+    overscroll-behavior-x: none;
+  }
+
+  /* Fix for 100vh on mobile Safari */
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
   }
 
   h1, h2, h3, h4 {
@@ -170,6 +182,21 @@
   [tabindex]:focus-visible {
     outline: 2px solid #a63d40;
     outline-offset: 3px;
+  }
+
+  /* Safari-specific scroll fixes */
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  /* Prevent rubber band effect on iOS */
+  #root {
+    overscroll-behavior: none;
   }
 }
 
