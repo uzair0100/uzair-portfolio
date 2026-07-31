@@ -97,10 +97,10 @@ export default function CardNav() {
           className="flex h-8 w-8 flex-col items-center justify-center gap-1.5 hover:opacity-80 transition-opacity"
         >
           <span
-            className={`h-0.5 w-5 transition-all duration-200 ${isOpen ? "translate-y-[3px] rotate-45 bg-white" : "bg-white"}`}
+            className={`h-1 w-5 transition-all duration-200 font-bold ${isOpen ? "translate-y-[3px] rotate-45 bg-orange-600" : "bg-white"}`}
           />
           <span
-            className={`h-0.5 w-5 transition-all duration-200 ${isOpen ? "-translate-y-[5px] -rotate-45 bg-white" : "bg-white"}`}
+            className={`h-1 w-5 transition-all duration-200 font-bold ${isOpen ? "-translate-y-[5px] -rotate-45 bg-orange-600" : "bg-white"}`}
           />
         </button>
         <span className="font-display text-sm font-bold uppercase tracking-[0.25em] text-white">
