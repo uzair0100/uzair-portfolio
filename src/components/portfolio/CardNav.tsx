@@ -94,15 +94,13 @@ export default function CardNav() {
           onClick={toggle}
           aria-label={isOpen ? "Close menu" : "Open menu"}
           aria-expanded={isOpen}
-          className="flex h-8 w-8 flex-col items-center justify-center gap-1.5"
+          className="flex h-8 w-8 flex-col items-center justify-center gap-1.5 hover:opacity-80 transition-opacity"
         >
           <span
-            className={`h-0.5 w-5 bg-white transition-transform ${isOpen ? "translate-y-[3px] rotate-45" : ""}`}
-            style={{ backgroundColor: '#ffffff' }}
+            className={`h-0.5 w-5 transition-all duration-200 ${isOpen ? "translate-y-[3px] rotate-45 bg-white" : "bg-white"}`}
           />
           <span
-            className={`h-0.5 w-5 bg-white transition-transform ${isOpen ? "-translate-y-[5px] -rotate-45" : ""}`}
-            style={{ backgroundColor: '#ffffff' }}
+            className={`h-0.5 w-5 transition-all duration-200 ${isOpen ? "-translate-y-[5px] -rotate-45 bg-white" : "bg-white"}`}
           />
         </button>
         <span className="font-display text-sm font-bold uppercase tracking-[0.25em] text-white">
