@@ -22,8 +22,8 @@ export default function Preloader() {
             <div className="font-display text-7xl font-bold text-white md:text-9xl">
               <CountUp
                 to={100}
-                duration={reducedMotion ? 0.5 : 2.2}
-                onEnd={() => setTimeout(() => setDone(true), reducedMotion ? 0 : 250)}
+                duration={reducedMotion ? 0.5 : 1.2}
+                onEnd={() => setTimeout(() => setDone(true), reducedMotion ? 0 : 150)}
                 className="bg-gradient-to-r from-violet to-cyan bg-clip-text text-transparent"
               />
               <span className="text-violet">%</span>

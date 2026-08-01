@@ -58,7 +58,11 @@ export default function BackgroundFX() {
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const density = Math.min(110, Math.floor((w * h) / 16000));
+      // Reduce particle density on mobile/low-memory devices
+      const isMobile = w < 768;
+      const isLowEnd = (navigator as any).deviceMemory && (navigator as any).deviceMemory <= 4;
+      const densityMultiplier = isMobile ? (isLowEnd ? 0.3 : 0.5) : 1;
+      const density = Math.min(110 * densityMultiplier, Math.floor((w * h) / 16000));
       particles = Array.from({ length: density }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
@@ -99,24 +103,29 @@ export default function BackgroundFX() {
         if (p.y < -20) p.y = h + 20;
         if (p.y > h + 20) p.y = -20;
       }
-      for (let i = 0; i < particles.length; i++) {
-        const a = particles[i];
-        for (let j = i + 1; j < particles.length; j++) {
-          const b = particles[j];
-          const dx = a.x - b.x;
-          const dy = a.y - b.y;
-          const d2 = dx * dx + dy * dy;
-          if (d2 < 14400) {
-            const alpha = (1 - d2 / 14400) * 0.35;
-            ctx.strokeStyle = `rgba(237,230,222,${alpha * 0.35})`;
-            ctx.lineWidth = 0.6;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
+      
+      // Skip line drawing on mobile to improve performance
+      if (window.innerWidth >= 768) {
+        for (let i = 0; i < particles.length; i++) {
+          const a = particles[i];
+          for (let j = i + 1; j < particles.length; j++) {
+            const b = particles[j];
+            const dx = a.x - b.x;
+            const dy = a.y - b.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < 14400) {
+              const alpha = (1 - d2 / 14400) * 0.35;
+              ctx.strokeStyle = `rgba(237,230,222,${alpha * 0.35})`;
+              ctx.lineWidth = 0.6;
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.stroke();
+            }
           }
         }
       }
+      
       for (const p of particles) {
         const dx = mouse.x - p.x;
         const dy = mouse.y - p.y;
@@ -145,7 +154,7 @@ export default function BackgroundFX() {
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       <div className="absolute inset-0 bg-grid-fade opacity-70" />
-      {!reducedMotion && <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />}
+      {!reducedMotion && window.innerWidth >= 1024 && <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />}
       <div
         className={`absolute -left-40 top-1/4 h-[520px] w-[520px] rounded-full bg-[#a63d40]/25 blur-[140px] ${reducedMotion ? "" : "animate-[float-orb_18s_ease-in-out_infinite]"}`}
       />
@@ -155,7 +164,7 @@ export default function BackgroundFX() {
       <div
         className={`absolute bottom-[-10%] left-1/3 h-[500px] w-[500px] rounded-full bg-[#7a2a2c]/25 blur-[160px] ${reducedMotion ? "" : "animate-[float-orb_26s_ease-in-out_infinite]"}`}
       />
-      {!reducedMotion && <div ref={spotRef} className="absolute inset-0" />}
+      {!reducedMotion && window.innerWidth >= 1024 && <div ref={spotRef} className="absolute inset-0" />}
       <div
         className="absolute inset-0"
         style={{
