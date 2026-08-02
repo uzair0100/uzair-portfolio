@@ -4,13 +4,23 @@ import { usePrefersReducedMotion } from "./use-prefers-reduced-motion";
 
 /**
  * Initializes Lenis smooth scroll once per page mount.
- * Skipped when the user prefers reduced motion.
+ * Skipped when the user prefers reduced motion OR on mobile devices.
+ * Mobile devices use native smooth scroll for better performance.
  */
 export function useLenis() {
   const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
-    if (reducedMotion) return;
+    // Disable Lenis on mobile devices - use native scroll instead
+    const isMobile = window.innerWidth < 1024 || 'ontouchstart' in window;
+    
+    if (reducedMotion || isMobile) {
+      // Enable native smooth scrolling on mobile
+      document.documentElement.style.scrollBehavior = 'smooth';
+      return () => {
+        document.documentElement.style.scrollBehavior = '';
+      };
+    }
 
     const lenis = new Lenis({
       duration: 1.1,

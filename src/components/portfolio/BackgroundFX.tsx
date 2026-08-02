@@ -6,8 +6,11 @@ export default function BackgroundFX() {
   const spotRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  // Detect mobile devices
+  const isMobile = typeof window !== 'undefined' && (window.innerWidth < 1024 || 'ontouchstart' in window);
+
   useEffect(() => {
-    if (reducedMotion) return;
+    if (reducedMotion || isMobile) return;
     const el = spotRef.current;
     if (!el) return;
     let raf = 0;
@@ -31,13 +34,18 @@ export default function BackgroundFX() {
       window.removeEventListener("mousemove", onMove);
       cancelAnimationFrame(raf);
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, isMobile]);
 
   useEffect(() => {
-    if (reducedMotion) return;
+    // Completely disable canvas on mobile - too expensive
+    if (reducedMotion || isMobile) return;
+    
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { 
+      alpha: true,
+      desynchronized: true // Better performance on some devices
+    });
     if (!ctx) return;
 
     let raf = 0;
@@ -58,17 +66,15 @@ export default function BackgroundFX() {
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      // Reduce particle density on mobile/low-memory devices
-      const isMobile = w < 768;
-      const isLowEnd = (navigator as any).deviceMemory && (navigator as any).deviceMemory <= 4;
-      const densityMultiplier = isMobile ? (isLowEnd ? 0.3 : 0.5) : 1;
-      const density = Math.min(110 * densityMultiplier, Math.floor((w * h) / 16000));
+      
+      // Significantly reduced particle density for desktop
+      const density = Math.min(60, Math.floor((w * h) / 25000));
       particles = Array.from({ length: density }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: (Math.random() - 0.5) * 0.25,
-        r: Math.random() * 1.6 + 0.4,
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: (Math.random() - 0.5) * 0.2,
+        r: Math.random() * 1.4 + 0.4,
       }));
     };
 
@@ -85,17 +91,18 @@ export default function BackgroundFX() {
 
     const draw = () => {
       ctx.clearRect(0, 0, w, h);
+      
       for (const p of particles) {
         const dx = mouse.x - p.x;
         const dy = mouse.y - p.y;
         const d2 = dx * dx + dy * dy;
         if (mouse.active && d2 < 22500) {
-          const f = (1 - d2 / 22500) * 0.08;
+          const f = (1 - d2 / 22500) * 0.06;
           p.vx += (dx / Math.sqrt(d2 + 0.01)) * f;
           p.vy += (dy / Math.sqrt(d2 + 0.01)) * f;
         }
-        p.vx *= 0.985;
-        p.vy *= 0.985;
+        p.vx *= 0.99;
+        p.vy *= 0.99;
         p.x += p.vx;
         p.y += p.vy;
         if (p.x < -20) p.x = w + 20;
@@ -104,24 +111,22 @@ export default function BackgroundFX() {
         if (p.y > h + 20) p.y = -20;
       }
       
-      // Skip line drawing on mobile to improve performance
-      if (window.innerWidth >= 768) {
-        for (let i = 0; i < particles.length; i++) {
-          const a = particles[i];
-          for (let j = i + 1; j < particles.length; j++) {
-            const b = particles[j];
-            const dx = a.x - b.x;
-            const dy = a.y - b.y;
-            const d2 = dx * dx + dy * dy;
-            if (d2 < 14400) {
-              const alpha = (1 - d2 / 14400) * 0.35;
-              ctx.strokeStyle = `rgba(237,230,222,${alpha * 0.35})`;
-              ctx.lineWidth = 0.6;
-              ctx.beginPath();
-              ctx.moveTo(a.x, a.y);
-              ctx.lineTo(b.x, b.y);
-              ctx.stroke();
-            }
+      // Draw lines between particles
+      for (let i = 0; i < particles.length; i++) {
+        const a = particles[i];
+        for (let j = i + 1; j < particles.length; j++) {
+          const b = particles[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < 12000) {
+            const alpha = (1 - d2 / 12000) * 0.25;
+            ctx.strokeStyle = `rgba(237,230,222,${alpha * 0.3})`;
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
           }
         }
       }
@@ -130,9 +135,9 @@ export default function BackgroundFX() {
         const dx = mouse.x - p.x;
         const dy = mouse.y - p.y;
         const near = mouse.active && dx * dx + dy * dy < 22500;
-        ctx.fillStyle = near ? "rgba(166,61,64,0.9)" : "rgba(237,230,222,0.55)";
+        ctx.fillStyle = near ? "rgba(166,61,64,0.85)" : "rgba(237,230,222,0.5)";
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r + (near ? 0.8 : 0), 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.r + (near ? 0.6 : 0), 0, Math.PI * 2);
         ctx.fill();
       }
       raf = requestAnimationFrame(draw);
@@ -149,12 +154,12 @@ export default function BackgroundFX() {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, isMobile]);
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       <div className="absolute inset-0 bg-grid-fade opacity-70" />
-      {!reducedMotion && window.innerWidth >= 1024 && <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />}
+      {!reducedMotion && !isMobile && <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />}
       <div
         className={`absolute -left-40 top-1/4 h-[520px] w-[520px] rounded-full bg-[#a63d40]/25 blur-[140px] ${reducedMotion ? "" : "animate-[float-orb_18s_ease-in-out_infinite]"}`}
       />
@@ -164,7 +169,7 @@ export default function BackgroundFX() {
       <div
         className={`absolute bottom-[-10%] left-1/3 h-[500px] w-[500px] rounded-full bg-[#7a2a2c]/25 blur-[160px] ${reducedMotion ? "" : "animate-[float-orb_26s_ease-in-out_infinite]"}`}
       />
-      {!reducedMotion && window.innerWidth >= 1024 && <div ref={spotRef} className="absolute inset-0" />}
+      {!reducedMotion && !isMobile && <div ref={spotRef} className="absolute inset-0" />}
       <div
         className="absolute inset-0"
         style={{

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
+import { ChevronDown } from "lucide-react";
 import { assets } from "@/lib/assets";
 import { DURATION, entranceTransition } from "@/lib/motion";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
@@ -12,7 +13,10 @@ export default function Hero() {
   const current = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    if (reducedMotion) return;
+    // Disable tilt on mobile devices - causes performance issues
+    const isMobile = window.innerWidth < 1024 || 'ontouchstart' in window;
+    if (reducedMotion || isMobile) return;
+    
     const el = imgRef.current;
     if (!el) return;
 
@@ -139,6 +143,29 @@ export default function Hero() {
           </div>
         </motion.div>
       </div>
+
+      {/* Scroll Down Indicator */}
+      <motion.a
+        href="#tech"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.2, duration: 0.6 }}
+        className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-2 text-white/40 transition-colors hover:text-white/80"
+        aria-label="Scroll down to see more"
+      >
+        <span className="text-xs uppercase tracking-widest">Scroll</span>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="flex flex-col gap-1"
+        >
+          <ChevronDown className="h-5 w-5" strokeWidth={1.5} />
+        </motion.div>
+      </motion.a>
     </section>
   );
 }

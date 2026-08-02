@@ -155,6 +155,8 @@
     -webkit-font-smoothing: antialiased;
     /* Fix Safari elastic scroll glitches */
     overscroll-behavior-y: none;
+    /* Prevent layout shifts */
+    overflow-x: hidden;
   }
 
   html {
@@ -163,12 +165,16 @@
     height: -webkit-fill-available;
     /* Prevent horizontal overscroll */
     overscroll-behavior-x: none;
+    /* Ensure scroll is smooth on mobile */
+    scroll-behavior: smooth;
   }
 
   /* Fix for 100vh on mobile Safari */
   body {
     min-height: 100vh;
     min-height: -webkit-fill-available;
+    /* Position fixed for mobile optimization */
+    position: relative;
   }
 
   h1, h2, h3, h4 {
@@ -197,6 +203,34 @@
   /* Prevent rubber band effect on iOS */
   #root {
     overscroll-behavior: none;
+  }
+
+  /* CRITICAL: Fix mobile scroll performance - prevent GPU layer thrashing */
+  @media (max-width: 1023px) {
+    * {
+      /* Remove will-change on mobile to prevent excessive GPU layers */
+      will-change: auto !important;
+    }
+    
+    /* Disable transforms on mobile for better scroll performance */
+    .sticky {
+      position: relative !important;
+    }
+    
+    /* Ensure smooth scrolling */
+    body, html {
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Reduce blur effects on mobile */
+    .blur-\[140px\], .blur-\[130px\], .blur-\[160px\] {
+      filter: blur(60px) !important;
+    }
+    
+    /* Optimize backdrop blur on mobile */
+    .backdrop-blur-xl, .backdrop-blur-lg, .backdrop-blur {
+      backdrop-filter: blur(8px) !important;
+    }
   }
 }
 

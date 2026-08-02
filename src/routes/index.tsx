@@ -5,6 +5,7 @@ import Preloader from "@/components/portfolio/Preloader";
 import StaggeredMenu from "@/components/portfolio/StaggeredMenu";
 import Hero from "@/components/portfolio/Hero";
 import BackgroundFX from "@/components/portfolio/BackgroundFX";
+import Resume from "@/components/portfolio/Resume";
 import TechMarquee from "@/components/portfolio/TechMarquee";
 import Stats from "@/components/portfolio/Stats";
 import Projects from "@/components/portfolio/Projects";
@@ -40,12 +41,16 @@ function Index() {
   useLenis();
   const reducedMotion = usePrefersReducedMotion();
   const heroRef = useRef<HTMLDivElement>(null);
+  
+  // Disable parallax on mobile - causes layout issues
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+  
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
   });
-  const scale = useTransform(scrollYProgress, [0, 1], reducedMotion ? [1, 1] : [1, 0.96]);
-  const opacity = useTransform(scrollYProgress, [0, 1], reducedMotion ? [1, 1] : [1, 0.5]);
+  const scale = useTransform(scrollYProgress, [0, 1], (reducedMotion || isMobile) ? [1, 1] : [1, 0.96]);
+  const opacity = useTransform(scrollYProgress, [0, 1], (reducedMotion || isMobile) ? [1, 1] : [1, 0.5]);
 
   return (
     <div className="relative min-h-screen bg-[#0f0f12] text-white">
@@ -77,13 +82,14 @@ function Index() {
 
       <motion.div
         ref={heroRef}
-        style={{ scale, opacity }}
-        className="sticky top-0 z-[1]"
+        style={isMobile ? {} : { scale, opacity }}
+        className={isMobile ? "relative z-[1]" : "sticky top-0 z-[1]"}
       >
         <Hero />
       </motion.div>
 
       <div className="relative z-10 rounded-t-[3rem] bg-[#0f0f12] shadow-[0_-40px_120px_rgba(0,0,0,0.6)]">
+        <Resume />
         <TechMarquee />
         <Stats />
         <Projects />

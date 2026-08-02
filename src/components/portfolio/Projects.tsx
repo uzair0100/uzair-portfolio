@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useRef } from "react";
 import { assets } from "@/lib/assets";
 import {
@@ -339,6 +339,27 @@ export default function Projects() {
         <p className="mx-auto mt-4 max-w-xl leading-[1.6] text-white/60">
           {projects.length} shipped and in-progress projects. Drag or scroll to explore.
         </p>
+        
+        {/* Scroll Right Indicator */}
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+          className="mt-6 flex items-center justify-center gap-2 text-white/30"
+        >
+          <span className="text-xs uppercase tracking-widest">Swipe</span>
+          <motion.div
+            animate={{ x: [0, 8, 0] }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            <ChevronRight className="h-5 w-5" strokeWidth={1.5} />
+          </motion.div>
+        </motion.div>
       </div>
 
       <div
